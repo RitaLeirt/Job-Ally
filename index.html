@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Rita LEI">
+    <meta name="contact" content="ruotong_lei@outlook.com">
+    <meta name="description" content="Job AIly — AI简历优化工具，由 Rita LEI 开发">
+    <meta name="copyright" content="© 2026 Rita LEI (ruotong_lei@outlook.com). All rights reserved.">
+    <title>Job AIly — AI简历合伙人</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';</script>
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar" id="navbar">
+    <div class="nav-inner">
+        <a class="logo" href="#" onclick="showPage('home')">
+            <span class="logo-mark">J</span><span class="logo-text">ob AIly</span>
+        </a>
+        <div class="nav-links">
+            <a class="nav-link active" data-page="home" onclick="showPage('home')">首页</a>
+            <a class="nav-link" data-page="resume" onclick="showPage('resume')">优化简历</a>
+        </div>
+        <div class="server-status" id="serverStatus" title="服务器状态">
+            <span class="status-dot" id="serverDot"></span>
+            <span class="status-label" id="serverLabel">连接中...</span>
+        </div>
+    </div>
+</nav>
+
+<!-- ===== PAGE: HOME ===== -->
+<section id="page-home" class="page active">
+    <div class="hero-wrap">
+        <div class="hero-content">
+            <div class="hero-chip">🤖 人机协作 · 非AI代写</div>
+            <h1 class="hero-title">AI不只是<br>替你写简历<br><em>而是和你一起打磨</em></h1>
+            <p class="hero-sub">MinerU智能解析 · JD关键词匹配 · 逐段确认优化<br>每一字都是你自己的</p>
+            <button class="btn-cta" onclick="showPage('resume')">开始优化简历 →</button>
+        </div>
+        <div class="hero-visual">
+            <div class="flow-card" style="--delay:0s">
+                <div class="flow-icon">📄</div>
+                <div class="flow-label">上传简历</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-card" style="--delay:.1s">
+                <div class="flow-icon">🔍</div>
+                <div class="flow-label">AI解析结构</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-card" style="--delay:.2s">
+                <div class="flow-icon">🎯</div>
+                <div class="flow-label">输入目标JD</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-card" style="--delay:.3s">
+                <div class="flow-icon">✨</div>
+                <div class="flow-label">逐段优化确认</div>
+            </div>
+            <div class="flow-arrow">↓</div>
+            <div class="flow-card" style="--delay:.4s">
+                <div class="flow-icon">📥</div>
+                <div class="flow-label">导出成品</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="features-section">
+        <h2 class="section-title">为什么不一样？</h2>
+        <div class="features-grid">
+            <div class="feat-card">
+                <div class="feat-num">01</div>
+                <h3>先问后写</h3>
+                <p>AI会先问你项目背景、职责、成果，再生成优化版本——不乱编，基于你真实的经历</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-num">02</div>
+                <h3>逐段确认</h3>
+                <p>每一段修改都需要你拍板，清楚说明改动原因，让你理解而不是盲目接受</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-num">03</div>
+                <h3>JD精准匹配</h3>
+                <p>解析目标岗位JD提取核心关键词，让简历精准命中招聘方的筛选逻辑</p>
+            </div>
+            <div class="feat-card">
+                <div class="feat-num">04</div>
+                <h3>STAR法则</h3>
+                <p>自动将散乱描述重构为S-T-A-R结构，让每段经历都有背景、行动、数据结果</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== PAGE: RESUME OPTIMIZER ===== -->
+<section id="page-resume" class="page">
+
+    <!-- STEP INDICATOR -->
+    <div class="step-bar" id="stepBar">
+        <div class="step-item active" data-step="1">
+            <div class="step-circle">1</div>
+            <span>上传简历</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item" data-step="2">
+            <div class="step-circle">2</div>
+            <span>输入目标JD</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item" data-step="3">
+            <div class="step-circle">3</div>
+            <span>逐段优化</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-item" data-step="4">
+            <div class="step-circle">4</div>
+            <span>导出</span>
+        </div>
+    </div>
+
+    <!-- === STEP 1: UPLOAD === -->
+    <div class="step-panel active" id="step1">
+        <div class="step-head">
+            <h2>上传你的简历</h2>
+            <p>支持 PDF、Word (.doc/.docx) 或直接粘贴文本</p>
+        </div>
+
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('resumeFile').click()">
+            <div class="upload-icon">📄</div>
+            <div class="upload-primary">点击上传 或 拖拽文件到这里</div>
+            <div class="upload-secondary">PDF · DOC · DOCX · 最大 20MB</div>
+            <button class="upload-paste-btn" onclick="event.stopPropagation(); openPasteModal()">或粘贴文本内容</button>
+        </div>
+        <input type="file" id="resumeFile" accept=".pdf,.doc,.docx" hidden>
+
+        <!-- File uploaded state -->
+        <div class="file-card" id="fileCard" style="display:none">
+            <div class="file-card-left">
+                <div class="file-type-badge" id="fileTypeBadge">PDF</div>
+                <div class="file-meta">
+                    <div class="file-name" id="fileName">resume.pdf</div>
+                    <div class="file-size" id="fileSize">2.3 MB</div>
+                </div>
+            </div>
+            <div class="file-card-right">
+                <div class="parse-status" id="parseStatus">
+                    <span class="parse-spinner" id="parseSpinner"></span>
+                    <span id="parseStatusText">等待解析</span>
+                </div>
+                <button class="remove-btn" onclick="removeFile()">✕ 移除</button>
+            </div>
+        </div>
+
+        <!-- Parse preview -->
+        <div class="parse-preview" id="parsePreview" style="display:none">
+            <div class="parse-preview-head">
+                <span class="parse-ok">✓ 解析成功</span>
+                <span class="parse-modules" id="parseModules">识别到 4 个模块</span>
+            </div>
+            <div class="parse-chips" id="parseChips"></div>
+        </div>
+
+        <div class="step-actions">
+            <button class="btn-solid btn-full" id="step1Next" onclick="goStep2()" disabled>
+                下一步：输入目标岗位 →
+            </button>
+        </div>
+    </div>
+
+    <!-- === STEP 2: JD INPUT === -->
+    <div class="step-panel" id="step2">
+        <div class="step2-head">
+            <div>
+                <h2>目标岗位 JD</h2>
+                <p>粘贴完整的职位描述，AI会提取核心关键词，量身定制优化方向</p>
+            </div>
+            <div class="step2-actions">
+                <button class="btn-ghost" onclick="goStep1()">← 返回</button>
+                <button class="btn-solid" id="step2Next" onclick="goStep3()" disabled>
+                    开始逐段优化 →
+                </button>
+            </div>
+        </div>
+
+        <div class="jd-layout">
+            <!-- Left: JD input (narrow) -->
+            <div class="jd-left">
+                <div class="jd-tabs">
+                    <button class="jd-tab active" onclick="switchJDTab('paste', this)">粘贴 JD</button>
+                    <button class="jd-tab" onclick="switchJDTab('template', this)">示例职位</button>
+                </div>
+
+                <div id="jdPastePanel">
+                    <textarea class="jd-textarea" id="jdInput" placeholder="粘贴目标岗位完整职位描述...
+
+AI 将自动提取：
+• 必备技能与工具
+• 经验与能力要求
+• 高频关键词
+
+提示：JD越完整，优化越精准"></textarea>
+                </div>
+
+                <div id="jdTemplatePanel" style="display:none">
+                    <div class="template-list">
+                        <div class="tpl-card" onclick="pickTemplate('pm')">
+                            <span class="tpl-icon">📱</span>
+                            <div>
+                                <div class="tpl-title">互联网产品经理</div>
+                                <div class="tpl-tags">需求分析 · 数据驱动 · 迭代</div>
+                            </div>
+                        </div>
+                        <div class="tpl-card" onclick="pickTemplate('ai-pm')">
+                            <span class="tpl-icon">🤖</span>
+                            <div>
+                                <div class="tpl-title">AI产品经理</div>
+                                <div class="tpl-tags">LLM · Prompt · 模型评估</div>
+                            </div>
+                        </div>
+                        <div class="tpl-card" onclick="pickTemplate('data')">
+                            <span class="tpl-icon">📊</span>
+                            <div>
+                                <div class="tpl-title">数据分析师</div>
+                                <div class="tpl-tags">SQL · Python · 可视化</div>
+                            </div>
+                        </div>
+                        <div class="tpl-card" onclick="pickTemplate('consulting')">
+                            <span class="tpl-icon">💼</span>
+                            <div>
+                                <div class="tpl-title">战略咨询</div>
+                                <div class="tpl-tags">商业分析 · 研究 · PPT</div>
+                            </div>
+                        </div>
+                        <div class="tpl-card" onclick="pickTemplate('mkt')">
+                            <span class="tpl-icon">📢</span>
+                            <div>
+                                <div class="tpl-title">市场营销</div>
+                                <div class="tpl-tags">品牌 · 社媒 · 活动策划</div>
+                            </div>
+                        </div>
+                        <div class="tpl-card" onclick="pickTemplate('ib')">
+                            <span class="tpl-icon">🏦</span>
+                            <div>
+                                <div class="tpl-title">投行分析师</div>
+                                <div class="tpl-tags">建模 · 尽调 · 行研</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: JD analysis panel (wide) -->
+            <div class="jd-right" id="jdPreviewPanel">
+                <div class="jd-preview-empty" id="jdPreviewEmpty">
+                    <div class="jd-empty-icon">🎯</div>
+                    <p>输入JD后<br>AI关键词分析将显示在这里</p>
+                </div>
+                <div class="jd-keywords-box" id="jdKeywordsBox" style="display:none">
+                    <div class="jd-kw-head">AI 提取关键词</div>
+                    <div class="kw-section">
+                        <div class="kw-label">核心技能</div>
+                        <div class="kw-tags" id="kwSkills"></div>
+                    </div>
+                    <div class="kw-section">
+                        <div class="kw-label">岗位要求
+                            <button class="jd-toggle-btn" id="jdReqToggleBtn" onclick="toggleJDReqs()" style="display:none">折叠</button>
+                        </div>
+                        <ul class="kw-list" id="kwReqs"></ul>
+                    </div>
+                    <div class="match-preview">
+                        <div class="match-label">与你简历的初步匹配</div>
+                        <div class="match-bar-wrap">
+                            <div class="match-bar-fill" id="jdMatchFill" style="width:0%"></div>
+                        </div>
+                        <div class="match-pct" id="jdMatchPct">--</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- === STEP 3: OPTIMIZE === -->
+    <div class="step-panel" id="step3">
+        <div class="optimizer-layout">
+            <!-- Left: Module list -->
+            <div class="module-sidebar">
+                <div class="sidebar-head">
+                    <div class="sidebar-title">简历模块</div>
+                    <div class="sidebar-progress">
+                        <div class="sidebar-progress-fill" id="sidebarFill" style="width:0%"></div>
+                    </div>
+                    <div class="sidebar-progress-label" id="sidebarLabel">0 / 0 已优化</div>
+                </div>
+                <div class="module-list" id="moduleList"></div>
+            </div>
+
+            <!-- Right: Module detail + AI panel -->
+            <div class="module-main">
+                <div class="module-empty" id="moduleEmpty">
+                    <div class="empty-icon">👈</div>
+                    <p>选择左侧模块<br>开始AI优化</p>
+                </div>
+
+                <!-- Module content area -->
+                <div class="module-content-area" id="moduleContentArea" style="display:none">
+                    <!-- Header -->
+                    <div class="mca-header">
+                        <div class="mca-title-row">
+                            <span class="mca-type-badge" id="mcaBadge">实习</span>
+                            <h3 class="mca-title" id="mcaTitle">经历标题</h3>
+                        </div>
+                        <div class="mca-jd-match">
+                            <span class="mca-match-label">JD匹配</span>
+                            <div class="mca-match-bar">
+                                <div class="mca-match-fill" id="mcaMatchFill" style="width:0%"></div>
+                            </div>
+                            <span class="mca-match-pct" id="mcaMatchPct">--</span>
+                        </div>
+                    </div>
+
+                    <!-- Current content -->
+                    <div class="mca-section">
+                        <div class="mca-section-label">当前内容</div>
+                        <div class="current-content-box" id="currentContentBox"></div>
+                    </div>
+
+                    <!-- Keywords found/missing -->
+                    <div class="mca-section">
+                        <div class="mca-section-label">JD关键词覆盖</div>
+                        <div class="kw-coverage-row" id="kwCoverageRow"></div>
+                    </div>
+
+                    <!-- AI suggestions -->
+                    <div class="mca-section" id="aiSuggestSection">
+                        <div class="mca-section-label">AI 分析建议</div>
+                        <div class="ai-suggestions-box" id="aiSuggestBox">
+                            <div class="ai-loading" id="aiLoadingBox" style="display:none">
+                                <div class="ai-spinner-ring"></div>
+                                <span>AI 分析中...</span>
+                            </div>
+                            <div class="ai-idle" id="aiIdleBox">点击下方「优化此模块」开始</div>
+                            <div class="ai-content" id="aiContentBox" style="display:none"></div>
+                        </div>
+                    </div>
+
+                    <!-- Action row -->
+                    <div class="mca-actions">
+                        <button class="btn-ghost btn-sm" id="skipModuleBtn" onclick="skipModule()">跳过此模块</button>
+                        <button class="btn-solid" id="optimizeModuleBtn" onclick="openOptimizeFlow()">
+                            ✨ 优化此模块
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Far right: JD reference panel -->
+            <div class="jd-ref-panel">
+                <div class="jd-ref-title">目标岗位</div>
+                <div class="jd-ref-name" id="jdRefName">—</div>
+
+                <div class="jd-ref-kw-label">匹配关键词</div>
+                <div class="jd-ref-tags" id="jdRefTags"></div>
+
+                <div class="overall-match">
+                    <div class="om-label">整体匹配度</div>
+                    <div class="om-score" id="omScore">--</div>
+                </div>
+
+                <div class="jd-ref-kw-label" style="margin-top:16px">
+                    完整JD描述
+                    <button class="jd-toggle-btn" id="jdToggleBtn" onclick="toggleJDFull()">收起 ↑</button>
+                </div>
+                <div class="jd-full-text" id="jdFullText"></div>
+            </div>
+        </div>
+
+        <div class="step-actions step-actions-bottom">
+            <button class="btn-ghost" onclick="goStep2()">← 修改JD</button>
+            <button class="btn-solid" id="step3Next" onclick="goStep4()" disabled>完成优化，导出 →</button>
+        </div>
+    </div>
+
+    <!-- === STEP 4: EXPORT === -->
+    <div class="step-panel" id="step4">
+        <div class="export-wrap">
+            <div class="export-hero">
+                <div class="export-check">✓</div>
+                <h2>简历优化完成！</h2>
+                <div class="export-score-row">
+                    <div class="export-score-box">
+                        <div class="export-score-val" id="exportScore">--</div>
+                        <div class="export-score-label">JD 匹配度</div>
+                    </div>
+                    <div class="export-score-box">
+                        <div class="export-score-val" id="exportOptCount">0</div>
+                        <div class="export-score-label">模块已优化</div>
+                    </div>
+                    <div class="export-score-box">
+                        <div class="export-score-val" id="exportKwCount">0</div>
+                        <div class="export-score-label">关键词融入</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="export-actions-grid">
+                <button class="export-card" onclick="exportResume('copy')">
+                    <div class="export-card-icon">📋</div>
+                    <div class="export-card-label">复制全文</div>
+                </button>
+                <button class="export-card" onclick="exportResume('txt')">
+                    <div class="export-card-icon">📄</div>
+                    <div class="export-card-label">下载 TXT</div>
+                </button>
+                <button class="export-card primary" onclick="exportResume('word')">
+                    <div class="export-card-icon">📝</div>
+                    <div class="export-card-label">下载 Word</div>
+                    <div class="export-card-badge">推荐</div>
+                </button>
+            </div>
+
+            <div class="export-disclaimer">
+                <label class="check-row">
+                    <input type="checkbox" id="confirmAccuracy" onchange="toggleExportBtn()">
+                    <span>我已核实所有AI修改内容真实准确，内容符合实际经历</span>
+                </label>
+            </div>
+
+            <div class="export-foot">
+                <button class="btn-ghost" onclick="goStep3()">← 继续调整</button>
+                <button class="btn-solid" id="finalExportBtn" onclick="doFinalExport()" disabled>确认导出</button>
+            </div>
+
+            <button class="restart-btn" onclick="restartFlow()">+ 优化另一份简历</button>
+        </div>
+    </div>
+
+</section>
+
+<!-- ===== PASTE TEXT MODAL ===== -->
+<div class="modal-backdrop" id="pasteModal" style="display:none">
+    <div class="modal-box modal-lg">
+        <div class="modal-head">
+            <span>粘贴简历内容</span>
+            <button class="modal-x" onclick="closePasteModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <textarea class="paste-textarea" id="pasteTextarea" placeholder="将简历内容粘贴到这里...
+
+支持：
+• 从 Word / PDF 复制的文字
+• 任何格式的纯文本"></textarea>
+        </div>
+        <div class="modal-foot">
+            <button class="btn-ghost" onclick="closePasteModal()">取消</button>
+            <button class="btn-solid" onclick="confirmPaste()">确认</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== OPTIMIZE FLOW MODAL ===== -->
+<div class="modal-backdrop" id="optimizeModal" style="display:none" onclick="handleOptimizeBackdropClick(event)">
+    <div class="modal-box modal-xl">
+        <div class="modal-head">
+            <span id="optimizeModalTitle">优化经历</span>
+            <button class="modal-x" onclick="closeOptimizeModal()">✕</button>
+        </div>
+
+        <!-- Flow steps -->
+        <div class="flow-steps" id="flowSteps">
+            <div class="flow-step active" data-s="1">① 完整度检测</div>
+            <div class="flow-step" data-s="2">② 补充信息</div>
+            <div class="flow-step" data-s="3">③ AI生成</div>
+            <div class="flow-step" data-s="4">④ 确认</div>
+        </div>
+
+        <div class="modal-body">
+            <!-- Sub-step 1: Completeness -->
+            <div class="flow-panel active" id="flowPanel1">
+                <div class="two-col">
+                    <div>
+                        <div class="panel-section-label">当前内容</div>
+                        <div class="original-box" id="originalBox"></div>
+                    </div>
+                    <div>
+                        <div class="panel-section-label">完整度分析</div>
+                        <div class="completeness-list" id="completenessItems"></div>
+                        <div class="completeness-hint" id="completenessHint"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub-step 2: AI Interview Chat -->
+            <div class="flow-panel" id="flowPanel2">
+                <!-- Chat mode (when AI is available) -->
+                <div id="flowChatInputArea">
+                    <div class="chat-intro">
+                        <span class="chat-intro-icon">🤖</span>
+                        <span>AI面试官会问你几个问题，帮助挖掘更多细节，生成更精准的简历描述</span>
+                    </div>
+                    <div class="flow-chat-area" id="flowChatArea"></div>
+                    <div class="chat-input-row">
+                        <textarea id="flowChatInput" class="chat-input-box"
+                            placeholder="输入你的回答，回车发送..."
+                            rows="2"
+                            onkeydown="handleChatKeydown(event)"></textarea>
+                        <button class="chat-send-btn" id="flowChatSendBtn" onclick="sendChatMessage()">发送</button>
+                    </div>
+                    <div class="chat-skip-hint">
+                        <span>没什么补充？</span>
+                        <button class="link-btn" onclick="document.getElementById('flowNextBtn').click()">直接跳过，让AI根据现有内容优化 →</button>
+                    </div>
+                </div>
+                <!-- Legacy form fallback (when AI unavailable) -->
+                <div id="flowLegacyForm" style="display:none">
+                    <p class="supplement-intro">请尽量详细填写，AI将基于这些信息生成优化版本</p>
+                    <div class="supp-grid">
+                        <div class="supp-field">
+                            <label>项目/工作背景</label>
+                            <textarea id="suppBackground" placeholder="这段经历是在什么背景下？要解决什么问题？"></textarea>
+                        </div>
+                        <div class="supp-field">
+                            <label>你的具体职责</label>
+                            <textarea id="suppRole" placeholder="你是主导者还是执行者？具体负责哪些工作？"></textarea>
+                        </div>
+                        <div class="supp-field">
+                            <label>使用的工具/方法</label>
+                            <input type="text" id="suppTools" placeholder="Excel、SQL、用户访谈、A/B测试...">
+                        </div>
+                        <div class="supp-field">
+                            <label>量化成果</label>
+                            <textarea id="suppResults" placeholder="提升了多少%？节省了多少时间？获得什么奖励？"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sub-step 3: AI generating -->
+            <div class="flow-panel" id="flowPanel3">
+                <div class="generating-area" id="generatingArea">
+                    <div class="gen-spinner"></div>
+                    <div class="gen-steps" id="genSteps">
+                        <div class="gen-step" id="gs1">📖 读取简历 + AI访谈内容...</div>
+                        <div class="gen-step" id="gs2">🎯 比对JD要求 + 提取关键词...</div>
+                        <div class="gen-step" id="gs3">✍️ STAR × XYZ双框架重构...</div>
+                        <div class="gen-step" id="gs4">⚡ 强动词润色 + ATS优化...</div>
+                    </div>
+                </div>
+                <div class="compare-area" id="compareArea" style="display:none">
+                    <div class="compare-col">
+                        <div class="compare-label before-label">优化前</div>
+                        <div class="compare-box before-box" id="compareBefore"></div>
+                    </div>
+                    <div class="compare-arrow-v">→</div>
+                    <div class="compare-col">
+                        <div class="compare-label after-label">优化后</div>
+                        <div class="compare-box after-box" id="compareAfter"></div>
+                    </div>
+                </div>
+                <div class="rewrite-explain" id="rewriteExplain" style="display:none">
+                    <div class="explain-title">💡 改写说明</div>
+                    <ul id="explainList"></ul>
+                </div>
+                <div class="matched-kw-row" id="matchedKwRow" style="display:none">
+                    <div class="explain-title">🎯 已融入JD关键词</div>
+                    <div id="matchedKwTags"></div>
+                </div>
+            </div>
+
+            <!-- Sub-step 4: Confirm -->
+            <div class="flow-panel" id="flowPanel4">
+                <div class="confirm-area">
+                    <div class="confirm-badge">✓</div>
+                    <h4>请确认最终版本</h4>
+                    <div class="confirm-content-box" id="confirmContentBox"></div>
+                    <div class="confirm-edit-hint">
+                        <button class="btn-ghost btn-sm" onclick="switchToEdit()">✏️ 手动编辑</button>
+                    </div>
+                    <textarea class="confirm-edit-area" id="confirmEditArea" style="display:none"></textarea>
+                    <div class="confirm-warning-row">
+                        <span>⚠️</span>
+                        <span>请确保内容真实准确，AI仅供参考，最终需人工核实</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-foot">
+            <button class="btn-ghost" id="flowPrevBtn" onclick="flowPrev()" style="display:none">上一步</button>
+            <button class="btn-solid" id="flowNextBtn" onclick="flowNext()">下一步 →</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<script>
+window.onerror = (msg, src, line, col, err) => {
+    console.error('Global error:', msg, 'line:', line);
+    document.title = '⚠️ JS Error: ' + msg;
+};
+</script>
+<script src="app.js"></script>
+<!-- 
+  ╔══════════════════════════════════════════════╗
+  ║  Job AIly — AI简历优化工具                    ║
+  ║  Author: Rita LEI (雷若彤)                   ║
+  ║  Email:  ruotong_lei@outlook.com             ║
+  ║  © 2026 Rita LEI. All rights reserved.       ║
+  ╚══════════════════════════════════════════════╝
+-->
+<footer style="display:none" aria-hidden="true"
+  data-author="Rita LEI"
+  data-email="ruotong_lei@outlook.com"
+  data-year="2026">
+</footer>
+</body>
+</html>
